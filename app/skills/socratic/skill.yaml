@@ -1,0 +1,11 @@
+id: socratic
+name: 苏格拉底问询
+description: 通过多轮提问澄清用户的套餐设计需求，最多 5 轮后生成需求摘要
+artifact_type: markdown
+artifact_title: 思考过程
+depends_on: []
+inputs: []
+outputs: [requirement_summary]
+uses_llm: true
+streaming: true
+propagate_downstream: true
