@@ -1,0 +1,11 @@
+id: case_match
+name: 案例匹配
+description: 用标签 Jaccard 相似度匹配最多 10 个最相关案例
+artifact_type: case_cards
+artifact_title: 匹配案例
+depends_on: [tag_inference]
+inputs: [selected_tags]
+outputs: [matched_cases]
+uses_llm: false
+streaming: false
+propagate_downstream: false
