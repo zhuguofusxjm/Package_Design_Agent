@@ -1,0 +1,11 @@
+id: tag_inference
+name: 设计标签推理
+description: 基于需求摘要从标签库中推理 1-3 个最合适的设计标签
+artifact_type: tag_list
+artifact_title: 设计标签建议
+depends_on: [socratic]
+inputs: [requirement_summary]
+outputs: [selected_tags, reasoning]
+uses_llm: true
+streaming: true
+propagate_downstream: true
