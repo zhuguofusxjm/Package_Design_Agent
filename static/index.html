@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="zh">
+<head>
+  <meta charset="utf-8" />
+  <title>运营商套餐设计助手</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+  <div class="app">
+    <section class="chat-pane">
+      <div style="padding:12px;border-bottom:1px solid #e5e7eb;font-weight:600;">
+        套餐设计助手
+        <span id="phase-pill" class="phase-pill">socratic</span>
+        <span class="toggle" id="toggle-side" style="float:right;">折叠右栏</span>
+      </div>
+      <div class="messages" id="messages"></div>
+      <div class="composer">
+        <input id="input" placeholder="告诉我你的套餐设计想法…" />
+        <button id="send">发送</button>
+      </div>
+    </section>
+    <aside class="side-pane" id="side-pane">
+      <div class="tabs" id="tabs"></div>
+      <div class="artifact" id="artifact"></div>
+    </aside>
+  </div>
+  <script src="/static/app.js"></script>
+</body>
+</html>
