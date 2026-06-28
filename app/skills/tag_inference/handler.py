@@ -55,7 +55,7 @@ class TagInferenceSkill(Skill):
             title=self.meta.artifact_title, content=content,
             version=version, status="done",
         )
-        yield SkillEvent(type="artifact_completed", skill_id=self.meta.id, version=version)
+        yield SkillEvent(type="artifact_completed", skill_id=self.meta.id, version=version, payload={"content": content})
 
     @staticmethod
     def _extract_json(text: str) -> dict:

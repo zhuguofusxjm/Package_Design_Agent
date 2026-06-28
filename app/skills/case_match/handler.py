@@ -47,7 +47,7 @@ class CaseMatchSkill(Skill):
             title=self.meta.artifact_title, content={"cases": matched},
             version=version, status="done",
         )
-        yield SkillEvent(type="artifact_completed", skill_id=self.meta.id, version=version)
+        yield SkillEvent(type="artifact_completed", skill_id=self.meta.id, version=version, payload={"content": {"cases": matched}})
 
 def load() -> CaseMatchSkill:
     with open(os.path.join(os.path.dirname(__file__), "skill.yaml"), "r", encoding="utf-8") as f:

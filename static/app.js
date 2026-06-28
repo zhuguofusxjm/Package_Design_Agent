@@ -138,6 +138,13 @@ function handleEvent(ev) {
     return;
   }
   if (ev.type === "artifact_completed") {
+    const a = artifacts[ev.skill_id];
+    if (a && ev.payload && ev.payload.content !== undefined) {
+      a.content = ev.payload.content;
+    }
+    if (a) a.version = ev.version || a.version;
+    if (activeTab === ev.skill_id) renderArtifact();
+    renderTabs();
     pushMessage("assistant", `${SKILL_TITLES[ev.skill_id] || ev.skill_id} 已更新（v${ev.version}）`, { skill_id: ev.skill_id });
     return;
   }
