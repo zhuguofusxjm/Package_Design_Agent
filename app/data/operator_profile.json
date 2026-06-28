@@ -1,0 +1,36 @@
+{
+  "self": {
+    "name": "Acme Mobile",
+    "user_segments": [
+      {"name": "年轻流量重度用户", "share": 0.32, "arpu": 85, "notes": "对热门赛事和娱乐内容敏感"},
+      {"name": "家庭主力用户", "share": 0.28, "arpu": 120, "notes": "倾向多终端家庭包"},
+      {"name": "商务用户", "share": 0.18, "arpu": 180, "notes": "看重稳定性和国际漫游"},
+      {"name": "价格敏感老用户", "share": 0.22, "arpu": 35, "notes": "对促销和试用敏感"}
+    ],
+    "current_packages": [
+      {"name": "Acme Lite", "price": 39, "data_gb": 10, "features": ["语音 100 分钟"]},
+      {"name": "Acme Family 100", "price": 159, "data_gb": 100, "features": ["主卡+3 副卡","家庭池"]},
+      {"name": "Acme Pro Unlimited", "price": 199, "data_gb": -1, "features": ["不限量","会员权益"]}
+    ]
+  },
+  "competitors": [
+    {
+      "name": "Beta Telecom",
+      "positioning": "性价比领先",
+      "packages": [
+        {"name": "Beta Saver 20", "price": 29, "data_gb": 20, "features": ["低价大流量"]},
+        {"name": "Beta Sports Pass", "price": 79, "data_gb": 50, "features": ["赛季直播免流"]}
+      ],
+      "recent_moves": "近期推出赛季限时包，主打体育内容"
+    },
+    {
+      "name": "Gamma Wireless",
+      "positioning": "家庭+终端套捆",
+      "packages": [
+        {"name": "Gamma Home Bundle", "price": 169, "data_gb": 150, "features": ["家宽+移动捆绑"]},
+        {"name": "Gamma Try30", "price": 0, "data_gb": 20, "features": ["30 天免费试用"]}
+      ],
+      "recent_moves": "扩展 TryAndBuy 路径，主推零门槛拉新"
+    }
+  ]
+}

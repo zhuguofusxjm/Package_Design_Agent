@@ -1,0 +1,37 @@
+[
+  {
+    "id": "try_and_buy",
+    "name": "TryAndBuy",
+    "description": "用户先免费试用一段时间，期满后按使用情况转付费。",
+    "applicable_audience": ["新用户", "价格敏感型"],
+    "applicable_scenarios": ["新业务推广", "高端服务试水"]
+  },
+  {
+    "id": "user_get_user",
+    "name": "UserGetUser",
+    "description": "老用户邀请新用户加入，双方均获得权益奖励。",
+    "applicable_audience": ["年轻用户", "社交活跃群体"],
+    "applicable_scenarios": ["拉新增长", "私域裂变"]
+  },
+  {
+    "id": "tiered_billing",
+    "name": "分档计费",
+    "description": "按使用量划分阶梯，不同档位单价不同。",
+    "applicable_audience": ["大流量用户", "重度用户"],
+    "applicable_scenarios": ["流量分级", "降低基础门槛"]
+  },
+  {
+    "id": "event_bundle",
+    "name": "赛事/事件捆绑",
+    "description": "围绕特定赛事或活动周期推出限时套餐，含相关权益。",
+    "applicable_audience": ["体育迷", "娱乐用户"],
+    "applicable_scenarios": ["世界杯", "演唱会", "电竞赛季"]
+  },
+  {
+    "id": "family_share",
+    "name": "家庭共享",
+    "description": "多终端/多成员共享一份资源池，主副卡机制。",
+    "applicable_audience": ["家庭用户"],
+    "applicable_scenarios": ["家庭付费", "多终端打包"]
+  }
+]

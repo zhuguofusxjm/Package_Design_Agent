@@ -1,0 +1,56 @@
+[
+  {
+    "id": "case_001",
+    "name": "T-Mobile 5G Home Internet 试用计划",
+    "operator": "T-Mobile",
+    "region": "US",
+    "tag_ids": ["try_and_buy", "tiered_billing"],
+    "summary": "新用户 15 天免费试用，期满转付费，按速率分档计费。",
+    "detail_md": "## 概况\n15 天试用期内不收费，期满转入分档付费。包含三档速率：基础/标准/极速。\n\n## 关键设计\n- 试用期：15 天\n- 转化激励：续费首月 8 折\n- 退订无门槛"
+  },
+  {
+    "id": "case_002",
+    "name": "Vodafone World Cup Pass",
+    "operator": "Vodafone",
+    "region": "EU",
+    "tag_ids": ["event_bundle", "tiered_billing"],
+    "summary": "世界杯期间 30 天无限流量 + 官方直播权益。",
+    "detail_md": "## 概况\n世界杯赛事窗口期推出，含官方直播 APP 免流。\n\n## 关键设计\n- 周期：赛事开赛前 7 天到结束\n- 权益：官方直播 APP 定向流量免计\n- 套餐档：30GB / 60GB / 不限量"
+  },
+  {
+    "id": "case_003",
+    "name": "Verizon Family Share Plan",
+    "operator": "Verizon",
+    "region": "US",
+    "tag_ids": ["family_share", "tiered_billing"],
+    "summary": "1 主卡带 4 副卡共享 100GB，超出后降速不停。",
+    "detail_md": "## 概况\n家庭共享资源池，副卡每张固定月费。\n\n## 关键设计\n- 主卡 + 最多 4 张副卡\n- 100GB 池子，超量降速到 3Mbps\n- 副卡可独立设置消费上限"
+  },
+  {
+    "id": "case_004",
+    "name": "Reliance Jio Refer & Earn",
+    "operator": "Jio",
+    "region": "IN",
+    "tag_ids": ["user_get_user"],
+    "summary": "邀请好友双方各得 1GB 数据，月上限 10GB。",
+    "detail_md": "## 概况\n通过 App 内分享邀请链接，新用户激活后双方各获 1GB。\n\n## 关键设计\n- 上限：每人每月 10GB 奖励\n- 双向激励：邀请方与被邀请方都得益\n- 集成在主 App 内分享"
+  },
+  {
+    "id": "case_005",
+    "name": "SK Telecom 5G Try Before You Buy",
+    "operator": "SK Telecom",
+    "region": "KR",
+    "tag_ids": ["try_and_buy"],
+    "summary": "5G 套餐 7 天免费体验，无需绑定支付方式。",
+    "detail_md": "## 概况\n注册即开通 7 天 5G 体验，期满不自动续费。\n\n## 关键设计\n- 不绑卡试用\n- 体验期权益与正式套餐一致\n- 提供一键转付费引导"
+  },
+  {
+    "id": "case_006",
+    "name": "Orange Euro Cup Bundle",
+    "operator": "Orange",
+    "region": "EU",
+    "tag_ids": ["event_bundle", "family_share"],
+    "summary": "欧洲杯赛季家庭包，多终端共享，含赛事直播权益。",
+    "detail_md": "## 概况\n面向家庭用户，赛事档限时上线。\n\n## 关键设计\n- 主副卡共享数据池\n- 含赛事直播流媒体免流\n- 套餐结束自动转回常规家庭包"
+  }
+]
