@@ -1,0 +1,11 @@
+id: self_analysis
+name: 看自己
+description: 基于本运营商画像和现有套餐，给出适配性与补充建议
+artifact_type: markdown
+artifact_title: 看自己
+depends_on: [tag_inference]
+inputs: [requirement_summary, selected_tags, operator.self]
+outputs: [self_md]
+uses_llm: true
+streaming: true
+propagate_downstream: false

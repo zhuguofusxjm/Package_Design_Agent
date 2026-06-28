@@ -1,0 +1,11 @@
+id: competitor_analysis
+name: 看对手
+description: 基于竞品画像，给出差异化与防守建议
+artifact_type: markdown
+artifact_title: 看对手
+depends_on: [tag_inference]
+inputs: [requirement_summary, selected_tags, operator.competitors]
+outputs: [competitor_md]
+uses_llm: true
+streaming: true
+propagate_downstream: false

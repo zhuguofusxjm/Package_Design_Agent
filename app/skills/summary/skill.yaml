@@ -1,0 +1,11 @@
+id: summary
+name: 汇总报告
+description: 汇总以上所有产出，输出一份完整设计摘要
+artifact_type: markdown
+artifact_title: Summary
+depends_on: [case_match, llm_supplement, self_analysis, competitor_analysis]
+inputs: [all_upstream]
+outputs: [summary_md]
+uses_llm: true
+streaming: true
+propagate_downstream: true

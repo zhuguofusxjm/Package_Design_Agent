@@ -1,0 +1,11 @@
+id: llm_supplement
+name: LLM 通用补充推理
+description: 在标签和案例基础上做与外部 LLM 一致的通用补充推理
+artifact_type: markdown
+artifact_title: LLM 补充建议
+depends_on: [tag_inference]
+inputs: [requirement_summary, selected_tags]
+outputs: [supplement_md]
+uses_llm: true
+streaming: true
+propagate_downstream: false
