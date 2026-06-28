@@ -22,8 +22,9 @@ class SocraticSkill(Skill):
         user_message = session.messages[-1].content if session.messages else ""
 
         force_done = round_no >= self.MAX_ROUNDS
-        instructions = template.format(
-            round=round_no, history=history, user_message=user_message
+        from app.skills.prompt_utils import render
+        instructions = render(
+            template, round=round_no, history=history, user_message=user_message,
         )
         if force_done:
             instructions += "\n\n注意：已达上限，必须输出 done:true 的 JSON 摘要。"
