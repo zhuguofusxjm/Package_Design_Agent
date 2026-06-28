@@ -1,0 +1,11 @@
+id: dispatcher
+name: ReAct 调度器
+description: 在 idle 阶段决定如何处理用户新消息：闲聊回复、改需求、或重跑哪些 skill
+artifact_type: markdown
+artifact_title: 调度决策
+depends_on: []
+inputs: []
+outputs: [decision]
+uses_llm: true
+streaming: false
+propagate_downstream: false
