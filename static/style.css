@@ -8,6 +8,10 @@ html, body { height: 100%; margin: 0; font-family: -apple-system, BlinkMacSystem
 .message { margin-bottom: 12px; max-width: 80%; padding: 10px 14px; border-radius: 12px; line-height: 1.55; white-space: pre-wrap; }
 .message.user { background: #2563eb; color: #fff; margin-left: auto; }
 .message.assistant { background: #f1f5f9; color: #111; }
+.message.skill-bubble { background: #fff; border: 1px solid #e5e7eb; padding: 12px 14px; max-width: 92%; white-space: normal; }
+.message.skill-bubble .skill-head { font-size: 12px; font-weight: 600; color: #2563eb; margin-bottom: 6px; letter-spacing: 0.02em; }
+.message.skill-bubble .skill-body { font-size: 14px; color: #111; }
+.message.skill-bubble .skill-body p { margin: 6px 0; }
 .message .view-link { margin-top: 6px; font-size: 12px; color: #2563eb; cursor: pointer; }
 .composer { display: flex; padding: 12px; border-top: 1px solid #e5e7eb; }
 .composer input { flex: 1; padding: 10px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; }

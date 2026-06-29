@@ -4,7 +4,7 @@ import os
 import yaml
 from typing import AsyncIterator
 from app.skills.base import Skill, SkillContext, SkillEvent
-from app.models import SkillMeta, Artifact, RequirementSummary, Message
+from app.models import SkillMeta, RequirementSummary, Message
 
 class SocraticSkill(Skill):
     MAX_ROUNDS = 5
@@ -29,37 +29,33 @@ class SocraticSkill(Skill):
         if force_done:
             instructions += "\n\n注意：已达上限，必须输出 done:true 的 JSON 摘要。"
 
-        yield SkillEvent(
-            type="artifact_started", skill_id=self.meta.id,
-            title=self.meta.artifact_title, version=1,
-        )
-
         buf = ""
         async for chunk in ctx.deepseek.chat_stream(
             [{"role": "system", "content": "你只输出问题文字或单一 JSON 对象。"},
              {"role": "user", "content": instructions}]
         ):
             buf += chunk
-            yield SkillEvent(type="artifact_delta", skill_id=self.meta.id, chunk=chunk)
 
         parsed = self._try_parse_done(buf)
         if parsed is not None:
             session.requirement = RequirementSummary(**parsed["summary"])
             session.phase = "ready"
-            content = f"### 需求摘要\n- 目标人群: {session.requirement.target_audience}\n- 场景: {session.requirement.scenario}\n- 特殊需求: {', '.join(session.requirement.special_needs) or '无'}\n- 备注: {session.requirement.notes}"
+            req = session.requirement
+            summary_md = (
+                "**需求摘要**\n\n"
+                f"- 目标人群: {req.target_audience or '（未指定）'}\n"
+                f"- 场景: {req.scenario or '（未指定）'}\n"
+                f"- 特殊需求: {', '.join(req.special_needs) or '无'}\n"
+                f"- 备注: {req.notes or '无'}\n\n"
+                "如果以上摘要符合预期，请回复\"确认\"以继续生成设计报告；"
+                "需要修改请直接说明。"
+            )
+            session.messages.append(Message(role="assistant", content=summary_md))
+            yield SkillEvent(type="chat_message", role="assistant", content=summary_md)
         else:
-            session.messages.append(Message(role="assistant", content=buf.strip()))
-            content = f"### 第 {round_no} 轮问询\n{buf.strip()}"
-
-        session.artifacts[self.meta.id] = Artifact(
-            skill_id=self.meta.id, type="markdown",
-            title=self.meta.artifact_title, content=content,
-            version=1, status="done",
-        )
-        yield SkillEvent(
-            type="artifact_completed", skill_id=self.meta.id, version=1,
-            payload={"phase": session.phase},
-        )
+            question = buf.strip()
+            session.messages.append(Message(role="assistant", content=question))
+            yield SkillEvent(type="chat_message", role="assistant", content=question)
 
     @staticmethod
     def _try_parse_done(text: str) -> dict | None:

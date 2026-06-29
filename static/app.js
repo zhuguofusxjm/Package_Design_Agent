@@ -14,13 +14,11 @@ const phasePill = document.getElementById("phase-pill");
 const sidePane = document.getElementById("side-pane");
 const toggleBtn = document.getElementById("toggle-side");
 
-const artifacts = {};
-let activeTab = null;
-let evtSource = null;
+const SIDE_SKILLS = new Set(["case_match", "summary"]);
 
 const SKILL_TITLES = {
-  socratic: "思考过程",
-  tag_inference: "设计标签建议",
+  socratic: "苏格拉底问询",
+  tag_inference: "设计标签",
   case_match: "匹配案例",
   llm_supplement: "LLM 补充建议",
   self_analysis: "看自己",
@@ -28,9 +26,14 @@ const SKILL_TITLES = {
   summary: "Summary",
 };
 
+const sideArtifacts = {};
+let activeTab = null;
+const inlineBubbles = {};
+let evtSource = null;
+
 function renderTabs() {
   tabsEl.innerHTML = "";
-  Object.values(artifacts).forEach((a) => {
+  Object.values(sideArtifacts).forEach((a) => {
     const el = document.createElement("div");
     el.className = "tab" + (activeTab === a.skill_id ? " active" : "");
     el.innerHTML = `${a.title}<span class="ver">v${a.version}</span>`;
@@ -41,34 +44,21 @@ function renderTabs() {
 
 function renderArtifact() {
   artifactEl.innerHTML = "";
-  if (!activeTab) return;
-  const a = artifacts[activeTab];
+  if (!activeTab) {
+    artifactEl.innerHTML = '<div style="color:#9ca3af;padding:24px;text-align:center;font-size:13px;">尚未生成报告</div>';
+    return;
+  }
+  const a = sideArtifacts[activeTab];
   if (!a) return;
-  if (a.type === "markdown") {
-    const div = document.createElement("div");
-    div.className = "markdown";
-    div.innerHTML = marked.parse(a.content || "");
-    artifactEl.appendChild(div);
-  } else if (a.type === "tag_list") {
-    const wrap = document.createElement("div");
-    (a.content.selected || []).forEach((t) => {
-      const pill = document.createElement("span");
-      pill.className = "tag-pill";
-      pill.textContent = t.name;
-      pill.title = t.reason;
-      wrap.appendChild(pill);
-    });
-    const reason = document.createElement("div");
-    reason.style.marginTop = "12px";
-    reason.style.fontSize = "13px";
-    reason.style.color = "#374151";
-    reason.textContent = a.content.reasoning || "";
-    artifactEl.appendChild(wrap);
-    artifactEl.appendChild(reason);
-  } else if (a.type === "case_cards") {
+  if (a.skill_id === "case_match") {
+    const cases = (a.content && a.content.cases) || [];
+    if (!cases.length) {
+      artifactEl.innerHTML = '<div style="color:#9ca3af;padding:24px;text-align:center;font-size:13px;">没有匹配到案例</div>';
+      return;
+    }
     const grid = document.createElement("div");
     grid.className = "case-grid";
-    (a.content.cases || []).forEach((c) => {
+    cases.forEach((c) => {
       const card = document.createElement("div");
       card.className = "case-card";
       card.innerHTML = `<h4>${c.name}</h4>
@@ -79,6 +69,11 @@ function renderArtifact() {
       grid.appendChild(card);
     });
     artifactEl.appendChild(grid);
+  } else {
+    const div = document.createElement("div");
+    div.className = "markdown";
+    div.innerHTML = marked.parse(a.content || "");
+    artifactEl.appendChild(div);
   }
 }
 
@@ -91,18 +86,72 @@ async function openCase(id) {
   document.getElementById("back").onclick = renderArtifact;
 }
 
-function pushMessage(role, content, meta) {
+function pushChat(role, content) {
   const el = document.createElement("div");
   el.className = "message " + role;
   el.textContent = content;
-  if (meta && meta.skill_id) {
-    const link = document.createElement("div");
-    link.className = "view-link";
-    link.textContent = `→ 查看 ${SKILL_TITLES[meta.skill_id] || meta.skill_id}`;
-    link.onclick = () => { activeTab = meta.skill_id; sidePane.classList.remove("collapsed"); renderTabs(); renderArtifact(); };
-    el.appendChild(link);
-  }
   messagesEl.appendChild(el);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+  return el;
+}
+
+function pushViewLink(skillId, version) {
+  const el = document.createElement("div");
+  el.className = "message assistant";
+  const title = SKILL_TITLES[skillId] || skillId;
+  el.textContent = `${title} 已生成（v${version}）`;
+  const link = document.createElement("div");
+  link.className = "view-link";
+  link.textContent = `→ 在右栏查看 ${title}`;
+  link.onclick = () => {
+    activeTab = skillId;
+    sidePane.classList.remove("collapsed");
+    renderTabs();
+    renderArtifact();
+  };
+  el.appendChild(link);
+  messagesEl.appendChild(el);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+function ensureInlineBubble(skillId, title) {
+  let bubble = inlineBubbles[skillId];
+  if (bubble) return bubble;
+  const el = document.createElement("div");
+  el.className = "message assistant skill-bubble";
+  const head = document.createElement("div");
+  head.className = "skill-head";
+  head.textContent = title;
+  const body = document.createElement("div");
+  body.className = "skill-body markdown";
+  el.appendChild(head);
+  el.appendChild(body);
+  messagesEl.appendChild(el);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+  bubble = { el, head, body, buf: "" };
+  inlineBubbles[skillId] = bubble;
+  return bubble;
+}
+
+function renderTagList(bubble, content) {
+  bubble.body.innerHTML = "";
+  const wrap = document.createElement("div");
+  (content.selected || []).forEach((t) => {
+    const pill = document.createElement("span");
+    pill.className = "tag-pill";
+    pill.textContent = t.name;
+    pill.title = t.reason;
+    wrap.appendChild(pill);
+  });
+  bubble.body.appendChild(wrap);
+  if (content.reasoning) {
+    const reason = document.createElement("div");
+    reason.style.marginTop = "8px";
+    reason.style.fontSize = "13px";
+    reason.style.color = "#374151";
+    reason.textContent = content.reasoning;
+    bubble.body.appendChild(reason);
+  }
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
@@ -112,71 +161,97 @@ function handleEvent(ev) {
     return;
   }
   if (ev.type === "chat_message") {
-    pushMessage("assistant", ev.content);
+    pushChat("assistant", ev.content);
     return;
   }
   if (ev.type === "artifact_started") {
-    artifacts[ev.skill_id] = {
-      skill_id: ev.skill_id,
-      title: ev.title || SKILL_TITLES[ev.skill_id] || ev.skill_id,
-      version: ev.version || 1,
-      type: guessType(ev.skill_id),
-      content: guessType(ev.skill_id) === "markdown" ? "" : {},
-    };
-    if (!activeTab) activeTab = ev.skill_id;
-    sidePane.classList.remove("collapsed");
-    renderTabs();
-    renderArtifact();
+    const skillId = ev.skill_id;
+    const title = SKILL_TITLES[skillId] || ev.title || skillId;
+    if (SIDE_SKILLS.has(skillId)) {
+      if (!sideArtifacts[skillId]) {
+        sideArtifacts[skillId] = { skill_id: skillId, title, version: ev.version || 1, content: skillId === "case_match" ? { cases: [] } : "" };
+      } else {
+        sideArtifacts[skillId].version = ev.version || sideArtifacts[skillId].version;
+      }
+      renderTabs();
+    } else {
+      delete inlineBubbles[skillId];
+      ensureInlineBubble(skillId, `${title}（生成中...）`);
+    }
     return;
   }
   if (ev.type === "artifact_delta") {
-    const a = artifacts[ev.skill_id];
-    if (a && a.type === "markdown") {
-      a.content += ev.chunk || "";
-      if (activeTab === ev.skill_id) renderArtifact();
+    const skillId = ev.skill_id;
+    if (SIDE_SKILLS.has(skillId)) {
+      const a = sideArtifacts[skillId];
+      if (a && typeof a.content === "string") {
+        a.content += ev.chunk || "";
+        if (activeTab === skillId) renderArtifact();
+      }
+      return;
+    }
+    if (skillId === "tag_inference") return;
+    const bubble = inlineBubbles[skillId];
+    if (bubble) {
+      bubble.buf += ev.chunk || "";
+      bubble.body.innerHTML = marked.parse(bubble.buf);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
     }
     return;
   }
   if (ev.type === "artifact_completed") {
-    const a = artifacts[ev.skill_id];
-    if (a && ev.payload && ev.payload.content !== undefined) {
-      a.content = ev.payload.content;
+    const skillId = ev.skill_id;
+    const title = SKILL_TITLES[skillId] || skillId;
+    const payloadContent = ev.payload && ev.payload.content !== undefined ? ev.payload.content : null;
+    if (SIDE_SKILLS.has(skillId)) {
+      let a = sideArtifacts[skillId];
+      if (!a) {
+        a = { skill_id: skillId, title, version: ev.version || 1, content: skillId === "case_match" ? { cases: [] } : "" };
+        sideArtifacts[skillId] = a;
+      }
+      if (payloadContent !== null) a.content = payloadContent;
+      a.version = ev.version || a.version;
+      if (!activeTab) activeTab = skillId;
+      sidePane.classList.remove("collapsed");
+      renderTabs();
+      if (activeTab === skillId) renderArtifact();
+      pushViewLink(skillId, a.version);
+      return;
     }
-    if (a) a.version = ev.version || a.version;
-    if (activeTab === ev.skill_id) renderArtifact();
-    renderTabs();
-    pushMessage("assistant", `${SKILL_TITLES[ev.skill_id] || ev.skill_id} 已更新（v${ev.version}）`, { skill_id: ev.skill_id });
+    const bubble = inlineBubbles[skillId];
+    if (skillId === "tag_inference" && bubble) {
+      bubble.head.textContent = title;
+      renderTagList(bubble, payloadContent || { selected: [], reasoning: "" });
+      return;
+    }
+    if (bubble) {
+      bubble.head.textContent = title;
+      const finalText = (typeof payloadContent === "string" && payloadContent) || bubble.buf;
+      bubble.body.innerHTML = marked.parse(finalText);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
     return;
   }
   if (ev.type === "error") {
-    pushMessage("assistant", `[错误] ${ev.message}`);
+    pushChat("assistant", `[错误] ${ev.message}`);
   }
-}
-
-function guessType(skillId) {
-  if (skillId === "tag_inference") return "tag_list";
-  if (skillId === "case_match") return "case_cards";
-  return "markdown";
 }
 
 function openStream() {
   if (evtSource) evtSource.close();
   evtSource = new EventSource(`/api/stream/${sessionId}`);
-  evtSource.onmessage = (e) => {
-    try { handleEvent(JSON.parse(e.data)); } catch (err) { console.error(err); }
-  };
-  evtSource.addEventListener("artifact_started", (e) => handleEvent(JSON.parse(e.data)));
-  evtSource.addEventListener("artifact_delta", (e) => handleEvent(JSON.parse(e.data)));
-  evtSource.addEventListener("artifact_completed", (e) => handleEvent(JSON.parse(e.data)));
-  evtSource.addEventListener("phase_change", (e) => handleEvent(JSON.parse(e.data)));
-  evtSource.addEventListener("chat_message", (e) => handleEvent(JSON.parse(e.data)));
-  evtSource.addEventListener("error", (e) => { if (e.data) handleEvent(JSON.parse(e.data)); });
+  const dispatch = (e) => { try { handleEvent(JSON.parse(e.data)); } catch (err) { console.error(err); } };
+  evtSource.onmessage = dispatch;
+  ["artifact_started", "artifact_delta", "artifact_completed", "phase_change", "chat_message"].forEach((t) => {
+    evtSource.addEventListener(t, dispatch);
+  });
+  evtSource.addEventListener("error", (e) => { if (e.data) dispatch(e); });
 }
 
 async function send() {
   const msg = inputEl.value.trim();
   if (!msg) return;
-  pushMessage("user", msg);
+  pushChat("user", msg);
   inputEl.value = "";
   sendBtn.disabled = true;
   try {
@@ -192,4 +267,5 @@ async function send() {
 sendBtn.onclick = send;
 inputEl.addEventListener("keydown", (e) => { if (e.key === "Enter") send(); });
 toggleBtn.onclick = () => sidePane.classList.toggle("collapsed");
+renderArtifact();
 openStream();
